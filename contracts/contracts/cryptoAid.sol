@@ -64,7 +64,7 @@ contract CryptoAid {
         string calldata description
     ) public {
         if (targetAmount <= 0) revert AmountLessThanZero();
-        address targetAddress = owner;
+        address targetAddress = address(this);
         if (targetAddress == address(0)) revert AddressNotValid();
 
         // Create new fund
@@ -126,6 +126,7 @@ contract CryptoAid {
         // Set completed the fund
         listFunds[fundId].completed = true;
 
+        releaseFund(fundId);
         emit FundCompleted(fundId);
     }
 
@@ -146,17 +147,45 @@ contract CryptoAid {
         }
     }
 
-    // Function for the owner to release specified funds to a given address
-    function releaseFund(address payable recipient, uint256 amount) public onlyOwner {
-        if (amount <= 0) revert AmountLessThanZero();
-        if (recipient == address(0)) revert AddressNotValid();
-        if (address(this).balance < amount) revert SendAmountFailed();
+        // Function to release funds for a specific fundId
+    function releaseFund(uint256 fundId) internal {
+        require(fundId < fundCounter, "Fund does not exist");
+        Fund storage fund = listFunds[fundId];
 
-        // Send specified amount to the recipient address
-        (bool success, ) = recipient.call{value: amount}("");
-        require(success, "Failed to send Ether");
+        uint256 totalAvailableAmount = fund.amount;
+        uint256 totalRequestedAmount;
+        address[] memory requesters = new address[](fundCounter);
+        uint256[] memory amounts = new uint256[](fundCounter);
+        uint256 requesterCount = 0;
+
+        // Iterate to find total requested amount and store requesters
+        for (uint256 i = 0; i < fundCounter; i++) {
+            address requester = msg.sender;
+            uint256 requestedAmount = fundRequests[fundId][requester];
+            if (requestedAmount > 0) {
+                totalRequestedAmount += requestedAmount;
+                requesters[requesterCount] = requester;
+                amounts[requesterCount] = requestedAmount;
+                requesterCount++;
+            }
+        }
+
+        if (totalAvailableAmount < totalRequestedAmount) {
+            // Release funds proportionally
+            for (uint256 i = 0; i < requesterCount; i++) {
+                uint256 proportionalAmount = (amounts[i] * totalAvailableAmount) / totalRequestedAmount;
+                payable(requesters[i]).transfer(proportionalAmount);
+                fundRequests[fundId][requesters[i]] = 0;
+            }
+        } else {
+            // Transfer the requested amount to each requester
+            for (uint256 i = 0; i < requesterCount; i++) {
+                payable(requesters[i]).transfer(amounts[i]);
+                fundRequests[fundId][requesters[i]] = 0;
+            }
+        }
+
     }
-
 
     // Function to return list of funds
     function getFunds() public view returns (Fund[] memory) {
