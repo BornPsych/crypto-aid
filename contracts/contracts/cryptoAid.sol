@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
+import "../interfaces/IAnonAadhaarVerifier.sol";
+
 contract CryptoAid {
     address public owner;  // Contract owner's address
-    // Existing events and custom errors...
-    constructor() {
+    address public anonAadhaarVerifierAddr;
+    constructor(address _verifierAddr) {
         owner = msg.sender;  // Set the contract deployer as the owner
+        anonAadhaarVerifierAddr = _verifierAddr;
     }
     modifier onlyOwner() {
         require(msg.sender == owner, "Only the owner can call this function");
