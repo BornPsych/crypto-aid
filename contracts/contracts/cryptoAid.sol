@@ -6,6 +6,7 @@ import "../interfaces/IAnonAadhaarVerifier.sol";
 contract CryptoAid {
     address public owner;  // Contract owner's address
     address public anonAadhaarVerifierAddr;
+    mapping(uint256 => mapping(address => uint256)) public fundRequests; // Mapping to store requested amounts
     constructor(address _verifierAddr) {
         owner = msg.sender;  // Set the contract deployer as the owner
         anonAadhaarVerifierAddr = _verifierAddr;
@@ -123,6 +124,23 @@ contract CryptoAid {
         listFunds[fundId].completed = true;
 
         emit FundCompleted(fundId);
+    }
+
+
+    // Updated function for verification and requesting funds
+    function verifyAndRequest(
+        uint256[2] calldata _pA, 
+        uint[2][2] calldata _pB, 
+        uint[2] calldata _pC, 
+        uint[34] calldata _pubSignals,
+        uint256 fundId,
+        uint256 amount
+    ) public {
+        require(fundId < fundCounter, "Fund does not exist");
+        bool isVerified = IAnonAadhaarVerifier(anonAadhaarVerifierAddr).verifyProof(_pA, _pB, _pC, _pubSignals);
+        if (isVerified) {
+            fundRequests[fundId][msg.sender] = amount;
+        }
     }
 
     // Function for the owner to release specified funds to a given address
