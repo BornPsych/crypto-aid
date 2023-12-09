@@ -16,7 +16,7 @@ import Image from "next/image";
 const Home: NextPageWithLayout = () => {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const adminAddress = "0x1ED513520fb320765abd2C1982c8FDfE391d8D4A"
+  const adminAddress = "0x88c48F67Ddde182C57273FD60bB662d425AD291a"
   const [userAddress, setUserAddress] = useState("");
   useEffect(() => {
     // Fetch the wagmi.store data from localStorage
@@ -60,9 +60,10 @@ const Home: NextPageWithLayout = () => {
         <h1 className="text-6xl text-center uppercase font-semibold mb-4 font-mono">⛑️Crypto Aid⛑️</h1>
         <Image src={HomeLandscape} alt="Home Landscape" className="w-full h-72 m-0 p-0"/>
         <p className="text-center text-lg mb-8 font-mono">
-          Welcome to Crypto Aid, Donate with believe, trust and transparency.
+          Welcome to Crypto Aid, the platform revolutionizing fundraising with
+          blockchain technology.
           <br />
-          Crypto Aid harnesses blockchain technology to guarantee transparency for all your loaded funds.
+          Crypto Aid harnesses blockchain technology to guarantee transparency and immutability of all campaign data.
           Eliminating intermediaries, smart contracts autonomously disburse funds to the intended beneficiary as soon
           as the target amount is met.
         </p>

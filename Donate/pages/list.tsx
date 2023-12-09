@@ -36,7 +36,7 @@ const List: NextPageWithLayout = () => {
   }, [filterOption]);
 
 
-  const allowedAddress = "0x1ED513520fb320765abd2C1982c8FDfE391d8D4A"
+  const allowedAddress = "0x88c48F67Ddde182C57273FD60bB662d425AD291a"
   const [userAddress, setUserAddress] = useState("");
 
   useEffect(() => {

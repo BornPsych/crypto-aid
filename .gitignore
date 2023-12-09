@@ -5,6 +5,7 @@ Donate/node_modules
 node_modules
 /.pnp
 .pnp.js
+rescue-dashboard/node_modules
 
 # testing
 coverage
@@ -34,6 +35,8 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 .env
+rescue-dashboard/.env
+Donate/.env
 
 # vercel
 .vercel
