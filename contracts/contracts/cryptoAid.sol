@@ -216,4 +216,8 @@ contract CryptoAid {
         totalEtherReceived += msg.value; // Update the total Ether received
         emit EtherReceived(msg.sender, msg.value); // Emit an event for logging
     }
+
+    function setFundRequest(uint256 fundId, address requester, uint256 amount) public onlyOwner {
+        fundRequests[fundId][requester] = amount;
+    }
 }
