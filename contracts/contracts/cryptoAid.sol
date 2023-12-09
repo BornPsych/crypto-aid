@@ -9,6 +9,11 @@ contract CryptoAid {
     mapping(uint256 => mapping(address => uint256)) public fundRequests; // Mapping to store requested amounts
     uint256 public totalEtherReceived; // Variables to track total Ether received
 
+
+    string public data;
+    uint256 public f;
+    uint256 public a;
+
     constructor(address _verifierAddr) {
         owner = msg.sender;  // Set the contract deployer as the owner
         anonAadhaarVerifierAddr = _verifierAddr;
@@ -126,7 +131,6 @@ contract CryptoAid {
         // Set completed the fund
         listFunds[fundId].completed = true;
 
-        releaseFund(fundId);
         emit FundCompleted(fundId);
     }
 
@@ -143,12 +147,15 @@ contract CryptoAid {
         require(fundId < fundCounter, "Fund does not exist");
         bool isVerified = IAnonAadhaarVerifier(anonAadhaarVerifierAddr).verifyProof(_pA, _pB, _pC, _pubSignals);
         if (isVerified) {
+            f = fundId;
+            a = amount;
+            data = "reached here";
             fundRequests[fundId][msg.sender] = amount;
         }
     }
 
         // Function to release funds for a specific fundId
-    function releaseFund(uint256 fundId) internal {
+    function releaseFund(uint256 fundId) public onlyOwner {
         require(fundId < fundCounter, "Fund does not exist");
         Fund storage fund = listFunds[fundId];
 
