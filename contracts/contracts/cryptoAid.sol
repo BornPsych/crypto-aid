@@ -7,6 +7,8 @@ contract CryptoAid {
     address public owner;  // Contract owner's address
     address public anonAadhaarVerifierAddr;
     mapping(uint256 => mapping(address => uint256)) public fundRequests; // Mapping to store requested amounts
+    uint256 public totalEtherReceived; // Variables to track total Ether received
+
     constructor(address _verifierAddr) {
         owner = msg.sender;  // Set the contract deployer as the owner
         anonAadhaarVerifierAddr = _verifierAddr;
@@ -46,6 +48,7 @@ contract CryptoAid {
     event FundCreated(uint256 id);
     event DonationCreated(uint256 amount, address author);
     event FundCompleted(uint256 id);
+    event EtherReceived(address sender, uint256 amount); // Event to log Ether receipt
 
     // Custom errors
     error FundDoesNotExist();
@@ -174,8 +177,14 @@ contract CryptoAid {
     }
 
     // Function to receive Ether. msg.data must be empty
-    receive() external payable {}
+    receive() external payable {
+        totalEtherReceived += msg.value; // Update the total Ether received
+        emit EtherReceived(msg.sender, msg.value); // Emit an event for logging
+    }
 
     // Fallback function is called when msg.data is not empty
-    fallback() external payable {}
+    fallback() external payable {
+        totalEtherReceived += msg.value; // Update the total Ether received
+        emit EtherReceived(msg.sender, msg.value); // Emit an event for logging
+    }
 }
